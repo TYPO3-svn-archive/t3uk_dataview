@@ -1,0 +1,6 @@
+plugin.tx_t3ukveranstaltungskalender_pi1 {
+
+maxImageWidth = 200
+clickEnlarge = 1
+
+}

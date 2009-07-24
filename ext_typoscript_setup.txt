@@ -1,0 +1,101 @@
+plugin.tx_t3ukdataview_pi1 {
+
+templateFile = EXT:t3uk_dataview/template.tmpl
+
+
+displayList {
+	image {
+		file.maxW = 70px
+		alttext = {$plugin.tx_t3ukdataview_pi1.altText}
+		imageLinkWrap = 0
+		imageLinkWrap {
+			enable = 1
+			bodyTag = <body style="margin:0;padding:0;">
+			wrap = <a href="javascript:close()"> | </a>
+			width = 400px
+			JSwindow = 1
+			JSwindow.newWindow = 1
+			} 
+		}
+	date_stdWrap = %d. %B %Y
+	time_wrap{
+			wrap = ,&nbsp;|&nbsp;h
+			required = 1
+		}
+	dateBegin{
+		wrap = |
+		required = 1
+	}
+	dateEnd{
+		wrap = -&nbsp;|
+		required = 1
+	}
+		
+}
+
+
+displayDetails {
+	image {
+		file.maxW = 200px
+		alttext = {$plugin.tx_t3ukdataview_pi1.altText}
+		imageLinkWrap = {$plugin.tx_t3ukdataview_pi1.clickEnlarge}
+		imageLinkWrap {
+			enable = 1
+			bodyTag = <body style="margin:0;padding:0;">
+			wrap = <a href="javascript:close()"> | </a>
+			width = 600px
+			JSwindow = 1
+			JSwindow.newWindow = 1
+			} 
+		} 
+}
+
+
+displaySingle {
+	image {
+		file.maxW = 200px
+		alttext = {$plugin.tx_t3ukdataview_pi1.altText}
+		imageLinkWrap = {$plugin.tx_t3ukdataview_pi1.clickEnlarge}
+		imageLinkWrap {
+			enable = 1
+			bodyTag = <body style="margin:0;padding:0;">
+			wrap = <a href="javascript:close()"> | </a>
+			width = 600px
+			JSwindow = 1
+			JSwindow.newWindow = 1
+			} 
+		} 
+}
+
+
+pageBrowser {
+    maxPages = 10
+    showResultCount = 1
+    activepage_stdWrap.wrap = <span class="tx-feusersview-active">|</span>
+    page_stdWrap.wrap = |
+    pagelink_stdWrap.wrap = |
+    previous_stdWrap.wrap = |
+    next_stdWrap.wrap = |
+}
+
+
+_CSS_DEFAULT_STYLE (
+.tx-feusersview-pi1 {width: 600px;}
+.tx-feusersview-list-label {font-weight:bold; padding-right:15px;}
+.tx-feusersview-list-data {padding-right:15px;}
+.tx-feusersview-details-label {font-weight:bold;}
+.tx-feusersview-single-label {font-weight:bold;}
+.tx-feusersview-link {text-decoration:none;font-weight:bold;}
+a:link {text-decoration:none;font-weight:bold;}
+a:hover {text-decoration:none;font-weight:bold;}
+a:visited {text-decoration:none;font-weight:bold;}
+#tx-feusersview-pagebrowser {text-align:right;font-weight:bold;padding-top:10px;padding-bottom:10px;}
+#tx-feusersview-pagebrowser a {font-weight:bold;text-decoration:none;color:#cccccc;padding:3px;}
+#tx-feusersview-count {text-align:left;padding-bottom:10px;}
+#tx-feusersview-abc {text-align:left;font-weight:bold; padding-top:10px;padding-bottom:10px;}
+#tx-feusersview-abc a {font-weight:bold;text-decoration:none;padding:3px;}
+.tx-feusersview-active {padding:3px;}
+.tx-feusersview-nolink {color:#cccccc;padding:3px;}
+.tx-feusersview-character {padding-left:2px; padding-right:2px;}
+)
+}

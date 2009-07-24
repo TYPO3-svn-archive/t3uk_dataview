@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 't3uk_dataview'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tt_content.list_type_pi1">dataview</label>
+			<label index="pages.tx_t3ukdataview_thema">Thema</label>
+			<label index="pages.tx_t3ukdataview_datum_beginn">Beginndatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_beginn">Uhrzeit Anfang</label>
+			<label index="pages.tx_t3ukdataview_datum_ende">Enddatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_ende">Uhrzeit Ende</label>
+			<label index="pages.tx_t3ukdataview_teaser">Kurzbeschreibung</label>
+			<label index="pages.tx_t3ukdataview_bild">Bild</label>
+			<label index="pages.tx_t3ukdataview_schlagworte">Schlagworte</label>
+			<label index="pages.tx_t3ukdataview_projekt">Projekt</label>
+			<label index="pages.tx_t3ukdataview_seiten">Seiten</label>
+			<label index="pages.tx_t3ukdataview_typ">Typ</label>
+			<label index="pages.tx_t3ukdataview_ort">Ort</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_pid">Ordner</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_general">Generell</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_titel">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_template_file">Template</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_list">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_box">Box (Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_thema">Thema</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_projekt">Projekt(Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting">Sortierung</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_uid">UID</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_nachname">Nachname</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_enddatum">Enddatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_company">Company</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_zip">Zip</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_city">City</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_erscheinungsdatum">Erscheinungsdatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order">Reihenfolge</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.fetable">Tabelle</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.showField">Sichtbare Felder</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_single">Einzelansicht</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_search">Suche</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.searchField">Durchsuchbare Felder</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.groupField">Group by Fields</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_filter">Filter Tabelle</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_Filter_fields">Filter Felder</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_additional_where">Zusätzliches Where</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="tt_content.list_type_pi1">Dataview</label>
+			<label index="pages.tx_t3ukdataview_thema">Thema</label>
+			<label index="pages.tx_t3ukdataview_datum_beginn">Beginndatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_beginn">Uhrzeit Anfang</label>
+			<label index="pages.tx_t3ukdataview_datum_ende">Enddatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_ende">Uhrzeit Ende</label>
+			<label index="pages.tx_t3ukdataview_teaser">Kurzbeschreibung</label>
+			<label index="pages.tx_t3ukdataview_bild">Bild</label>
+			<label index="pages.tx_t3ukdataview_schlagworte">Schlagworte</label>
+			<label index="pages.tx_t3ukdataview_projekt">Projekt</label>
+			<label index="pages.tx_t3ukdataview_seiten">Seiten</label>
+			<label index="pages.tx_t3ukdataview_typ">Typ</label>
+			<label index="pages.tx_t3ukdataview_ort">Ort</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_pid">Ordner</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_general">Generell</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_titel">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_template_file">Template</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_list">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_box">Box (Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_thema">Thema</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_projekt">Projekt(Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting">Sortierung</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_uid">UID</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_nachname">Nachname</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_enddatum">Enddatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_company">Company</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_zip">Zip</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_city">City</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_erscheinungsdatum">Erscheinungsdatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order">Reihenfolge</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+		</languageKey>
+		<languageKey index="en" type="array">
+			<label index="tt_content.list_type_pi1">dataview</label>
+			<label index="pages.tx_t3ukdataview_thema">Thema</label>
+			<label index="pages.tx_t3ukdataview_datum_beginn">Beginndatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_beginn">Uhrzeit Anfang</label>
+			<label index="pages.tx_t3ukdataview_datum_ende">Enddatum</label>
+			<label index="pages.tx_t3ukdataview_uhrzeit_ende">Uhrzeit Ende</label>
+			<label index="pages.tx_t3ukdataview_teaser">Kurzbeschreibung</label>
+			<label index="pages.tx_t3ukdataview_bild">Bild</label>
+			<label index="pages.tx_t3ukdataview_schlagworte">Schlagworte</label>
+			<label index="pages.tx_t3ukdataview_projekt">Projekt</label>
+			<label index="pages.tx_t3ukdataview_seiten">Seiten</label>
+			<label index="pages.tx_t3ukdataview_typ">Typ</label>
+			<label index="pages.tx_t3ukdataview_ort">Ort</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_pid">Ordner</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_general">Generell</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_titel">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.general_template_file">Template</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_list">Liste</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_box">Box (Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_thema">Thema</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_category_projekt">Projekt(Kann raus)</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting">Sortierung</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_uid">UID</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_nachname">Nachname</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_enddatum">Enddatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_company">Company</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_zip">Zip</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_city">City</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_sorting_erscheinungsdatum">Erscheinungsdatum</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order">Reihenfolge</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+	
+		</languageKey>
+	</data>
+</T3locallang>
