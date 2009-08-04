@@ -20,6 +20,26 @@
 			</config>
 		</TCEforms>
 	</general_titel>
+	<what_to_display>
+		<TCEforms type="array">
+			<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.general_what_to_display</label>
+			<config>
+				<type>select</type>
+				<items type="array">
+					<numIndex index="0" type="array">
+						<numIndex index="0">LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_list</numIndex>
+						<numIndex index="1">LIST</numIndex>
+					</numIndex>
+					<numIndex index="1" type="array">
+						<numIndex index="0">LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_single</numIndex>
+						<numIndex index="1">SINGLE</numIndex>
+					</numIndex>
+				</items>	
+				<maxitems>1</maxitems>
+				<size>1</size>
+			</config>
+		</TCEforms>
+		  </what_to_display>
 	<fetable>
 	  <TCEforms>
 		<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.fetable</label>
@@ -91,9 +111,9 @@
 	    </config>
 	  </TCEforms>		 
 	</showFields>
-	<groupFields>
+	<linkFields>
 	  <TCEforms>
-	    <label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.groupField</label>
+	    <label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.linkField</label>
 	    <config>
 		  <items>
 			    <n0></n0>
@@ -105,7 +125,7 @@
 		    <itemsProcFunc>tx_t3ukdataview_flexfill-&gt;mainav</itemsProcFunc>
 	    </config>
 	  </TCEforms>		 
-	</groupFields>
+	</linkFields>
 	<foreignTables>
 		<TCEforms type="array">
 		<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.list_filter</label>
@@ -142,6 +162,22 @@
 			</config>
 		</TCEforms>
 	</additional_where>
+	<single_pid>
+		<TCEforms>
+			<exclude>1</exclude>
+			<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.single_pid</label>
+			<config>
+				<type>group</type>
+				<internal_type>db</internal_type>
+				<allowed>pages</allowed>
+				<size>2</size>
+				<maxitems>1</maxitems>
+				<minitems>0</minitems>
+				<autoSizeMax>2</autoSizeMax>
+				<show_thumbs>0</show_thumbs>
+			</config>
+		</TCEforms>
+	</single_pid>
 	<list_sorting>
 		<TCEforms type="array">
 		<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.list_sorting</label>

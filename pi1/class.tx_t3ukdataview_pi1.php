@@ -50,20 +50,36 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$this->config['table'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], fetable, sGENERAL);
 		$this->config['template'] = $this->cObj->fileResource($template  ? 'uploads/t3uk_dataview/'.$template : $this->conf['templateFile']);
 		$this->config['general_pid'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], general_pid, sGENERAL);
+		//sDEF
 		$this->config['list_showFields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], showFields, sDEF);
+		//This is done because we always need the uid of the elements
+		$this->config['list_showFields'] = $this->config['list_showFields'].", uid";
 		if ($this->config['list_showFields']=="") $this->config['list_showFields']='*';
 		$this->config['list_sorting'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_sorting, sDEF);
 		$this->config['foreignTables'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], foreignTables, sDEF);
 		$this->config['list_order'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_order, sDEF);
 		$this->config['filter_fields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], filter_fields, sDEF);
 		$this->config['list_limit'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_limit, sDEF);
-		$this->config['single_showFields'] = $this->pi_getFFvalue($this->cObj->data['additional_where'], showFields, sSINGLE);
-		$this->config['additional_where'] = $this->pi_getFFvalue($this->cObj->data['additional_where'], list_limit, sDEF);
-		$this->config['searchFields'] = $this->pi_getFFvalue($this->cObj->data['additional_where'], searchFields, sSEARCH);
+		$this->config['list_linkFields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], linkFields, sDEF);
+		$this->config['list_singlePid'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], single_pid, sDEF);
+		//if there is no single page selected, just take the current one
+		if ($this->config['list_singlePid']=="") $this->config['list_singlePid']=$this->cObj->data['pid'];
+		$this->config['additional_where'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_limit, sDEF);
+		//sSingle
+		$this->config['single_showFields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], showFields, sSINGLE);
+		//if nothing is selected show all fields
+		if($this->config['single_showFields']=="") $this->config['single_showFields'] = "*";
+		//sSearch
+		$this->config['searchFields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], searchFields, sSEARCH);
+		$this->modus = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sGENERAL');
 		//Debug shit
 		//Complete Flexform
 		t3lib_div::print_array($this->config['filter_fields']);
 		t3lib_div::print_array($this->config['foreignTables']);
+		t3lib_div::print_array($this->modus);
+		t3lib_div::print_array($this->config['list_linkFields']);
+		t3lib_div::print_array($this->config['list_singlePid']);
+		t3lib_div::print_array($this->config['list_singlePid']);
 		//t3lib_div::print_array("Config:");
 		//t3lib_div::print_array($this->config);
 		//t3lib_div::print_array("Template:");
@@ -81,9 +97,131 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 	function main($content,$conf)	{
 		$this->local_cObj = t3lib_div::makeInstance('tslib_cObj');
 		$this->init($conf);
-		$content=$this->displayList();
-		
+	
+		if ($this->piVars['single']) $this->modus="SINGLE";
+		switch($this->modus) {
+		 case "LIST":
+			$content = $this->displayList();
+			break;
+		 case "SINGLE":
+			$content = $this->displaySingle();
+			break;
+		}
 		return $this->pi_wrapInBaseClass($content);
+	}
+	function displaySingle(){
+		global $TCA;
+		t3lib_div::loadTCA($this->config['table']);
+		setlocale (LC_ALL,$GLOBALS['TSFE']->config['config']['locale_all']);
+		$lconf = $this->conf["displaySingle."];
+		
+		//This is done because fe_users dont have a hidden and sys_language_uid field (really stupid)
+		if($this->config['table']=="fe_users"){
+			$hidden =" disable = '0'";
+			$language="";
+		}
+		else {
+			$hidden =" hidden = '0'";
+			$language ="AND sys_language_uid =".$GLOBALS['TSFE']->sys_language_content;
+		}
+	
+		$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['single_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' AND uid= (".intval($this->piVars['uid']).") $additional_where", "", "", "");
+		
+		$t = array();
+		$t["total"] = $this->cObj->getSubpart($this->config['template'], "###TEMPLATE_LIST###");
+		$t["item"] = $this->cObj->getSubpart($t["total"], "###TEMPLATE_LIST_ITEM###");
+	
+		$content_table = "";
+		$markerArray = array();
+
+		$row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res);
+		if ($GLOBALS['TSFE']->sys_language_content) {
+			$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
+		}
+		foreach($row as $name => $value){
+			  $wrap['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
+			  $wrap['stdWrap.']['require'] = 1;
+				//Is there something defined in LOCAL_LANG?
+			  if($this->LOCAL_LANG[$this->LLkey][$name]!=""){
+				$wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_single_'.$name.'"><span class="t3uk_dataview_single_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
+			  }else $wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_single_'.$name.'"> | </div> '."\r\n";
+			  if ($value!=""){
+				//Field is a groupbox
+			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='group'){
+				//Field is a file
+				if($TCA[$this->config['table']]['columns'][$name]['config']['internal_type']=='file'){
+				      
+				      //Is it an Image?
+				      $pos = strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "jpg")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "gif")
+				      ||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "jpeg")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "tif")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "bmp")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "pcx")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "tga")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "png")||strrpos($TCA[$this->config['table']]['columns'][$name]['config']['allowed'], "ai");
+				      //Yes its an Image
+				      if ($pos === true) {
+					  $image =$value;
+					  $lconf["image."]["file"] = $TCA[$this->config['table']]['columns'][$name]['config']['uploadfolder']."/".($image);
+					  $lconf["image."]["altText"] = $image;
+					  $theImgCode = $this->cObj->IMAGE($lconf["image."]);
+					  $content .= $theImgCode;
+				      }
+			      }
+				//Its a database relation
+				if($TCA[$this->config['table']]['columns'][$name]['config']['internal_type']=='db') {	
+					//Its an MM Relation
+					if($TCA[$this->config['table']]['columns'][$name]['config']['MM']){
+						$local=$this->config['table'];
+						$mm_table = $TCA[$this->config['table']]['columns'][$name]['config']['MM'];
+						$foreign_table = $TCA[$this->config['table']]['columns'][$name]['config']['allowed'];
+						//To avoid ambigous fields we set the local table praefix
+						//We take the label of the foreign table as the "to show field"
+						// for the frontend. Better ideas?
+						$fields=explode(",",$TCA[$foreign_table]['ctrl']['label']);
+						foreach($fields as $name => $value){
+							$temp[$name]=$foreign_table.".".$value;
+						}
+						$fields=implode(",",$temp);
+						if ($general_pid) $general_pid="$foreign_table.$general_pid";
+						if ($language) $language = $language ="AND $foreign_table.sys_language_uid =".$GLOBALS['TSFE']->sys_language_content;
+						
+						$res = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $mm_table.uid_local = (".intval($this->piVars['uid']).") AND $general_pid $local.$hidden AND $local.deleted = '0' AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 $additional_where", "$foreign_table.uid", "","");
+						/*This is Version with sys_language_uid, which crashes when there is no sys_language_uid in foreign table
+						$res = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$foreign_table,$mm_table,$local, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 $additional_where", "$foreign_table.uid", "","");*/
+	
+						while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
+							if ($GLOBALS['TSFE']->sys_language_content) {
+								$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
+							}
+							foreach($row as $name => $value){
+							//t3lib_div::print_array($TCA[$this->config['table']]['columns'][$name]);
+							$wrap2['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
+							$wrap2['stdWrap.']['require'] = 1;
+							//t3lib_div::print_array($lconf["label_$name."]);
+				
+							if($this->LOCAL_LANG[$this->LLkey][$name]!=""){
+								$wrap2['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
+							}else $wrap2['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"> | </div> '."\r\n";
+							$content .= $this->local_cObj->stdWrap($value,$wrap2);
+							}	
+						}
+					}
+					//Its a normal commaseperated Relation
+					if($ToDo){
+					echo("Commaseperated is ToDo");
+					}
+				
+				}
+			      }
+			      //Field is an Timestamp
+			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']=='date') $content .=$this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$value),$wrap);
+				
+				
+				//Normal Text
+			      if(($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']!='date')||$TCA[$this->config['table']]['columns'][$name]['config']['type']=='text')
+				$content .= $this->local_cObj->stdWrap($value,$wrap);
+			  }
+			}
+		return $content;
+		
+		
+		
 	}
 	function displayList() {
 		global $TCA;
@@ -175,12 +313,14 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			
 		while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
 			if ($GLOBALS['TSFE']->sys_language_content) {
-				
+			
 				$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
 				//t3lib_div::print_array($row);
 				//$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
 				//$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('pages_language_overlay', $row, $GLOBALS['TSFE']->sys_language_content, "strict;0");
 			}
+			//The uid of the current element
+			$currentuid=$row['uid'];
 			foreach($row as $name => $value){
 			  //t3lib_div::print_array($TCA[$this->config['table']]['columns'][$name]);
 			 // $wrap['stdWrap'] = "<div class='t3uk_dataview_$name'> | </div>";
@@ -189,8 +329,8 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			//t3lib_div::print_array($lconf["label_$name."]);
 
 			  if($this->LOCAL_LANG[$this->LLkey][$name]!=""){
-				$wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_'.$name.'"><span class="t3uk_dataview_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
-			  }else $wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_'.$name.'"> | </div> '."\r\n";
+				$wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
+			  }else $wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"> | </div> '."\r\n";
 			  
 			  if ($value!=""){
 			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='group'&&$TCA[$this->config['table']]['columns'][$name]['config']['internal_type']=='file'){
@@ -210,7 +350,13 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			      //Field is an Timestamp
 			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']=='date') $content .=$this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$value),$wrap);
 				//Normal Text
-			      if(($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']!='date')||$TCA[$this->config['table']]['columns'][$name]['config']['type']=='text') $content .= $this->local_cObj->stdWrap($value,$wrap);
+			      if(($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']!='date')||$TCA[$this->config['table']]['columns'][$name]['config']['type']=='text')
+				//Shall the current field be linke to single page?
+				if (stripos($this->config['list_linkFields'],$name)!==false){
+					$temp= $this->pi_linkTP($value,array($this->prefixId."[uid]" => $currentuid,$this->prefixId."[single]" => "1"),1,$this->config['list_singlePid']);
+					$content .= $this->local_cObj->stdWrap($temp,$wrap);
+				}
+				else $content .= $this->local_cObj->stdWrap($value,$wrap);
 			  }
 			}
 
