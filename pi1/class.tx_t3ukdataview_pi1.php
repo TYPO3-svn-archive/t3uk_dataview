@@ -337,6 +337,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$t = array();
 		$t["total"] = $this->cObj->getSubpart($this->config['template'], "###TEMPLATE_LIST###");
 		$t["item"] = $this->cObj->getSubpart($t["total"], "###TEMPLATE_LIST_ITEM###");
+
 	
 		$content_table = "";
 		$markerArray = array();
