@@ -74,12 +74,15 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$this->modus = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sGENERAL');
 		//Debug shit
 		//Complete Flexform
+		t3lib_div::print_array("showFields:");
+		t3lib_div::print_array($this->config['list_showFields']);
 		t3lib_div::print_array($this->config['filter_fields']);
 		t3lib_div::print_array($this->config['foreignTables']);
 		t3lib_div::print_array($this->modus);
 		t3lib_div::print_array($this->config['list_linkFields']);
 		t3lib_div::print_array($this->config['list_singlePid']);
 		t3lib_div::print_array($this->config['list_singlePid']);
+		//t3lib_div::print_array($this->config['searchFields']);
 		//t3lib_div::print_array("Config:");
 		//t3lib_div::print_array($this->config);
 		//t3lib_div::print_array("Template:");
@@ -231,9 +234,10 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$lconf = $this->conf["displayList."];
 		$sorting = $this->config['list_sorting'];
 		$order = $this->config['list_order'];
+		if ($this->config['searchFields']!="") $search=true;
+		$searchfor = htmlspecialchars($this->piVars['searchfor']);
 		
-		
-
+		t3lib_div::print_array($searchfor);
 		
 		//This is done because fe_users dont have a hidden and sys_language_uid field (really stupid)
 		if($this->config['table']=="fe_users"){
@@ -256,10 +260,6 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$resultlimit = $this->internal['results_at_a_time'];
 		$startAt = (intval($this->piVars['pointer'])) ? (intval($this->piVars['pointer']) * $this->internal['results_at_a_time']) : 0;
 		
-		$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' $additional_where", "", "$sorting $order", "$startAt, $resultlimit");
-	      
-		$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden AND deleted = '0' $additional_where", "", "", "");
-	
 		//Foreign Tables is set
 		if($this->config['foreignTables']){
 		//There are Filter Fields, in an MM table
@@ -267,7 +267,8 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			$local=$this->config['table'];
 			$mm_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['MM'];
 			$foreign_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['allowed'];
-			//To avoid ambigous fields we set the local table praefix
+			//To avoid ambigous fields we set the table praefix
+			
 			$fields=explode(",",$this->config['list_showFields']);
 			foreach($fields as $name => $value){
 				$temp[$name]=$local.".".$value;
@@ -275,15 +276,54 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			$fields=implode(",",$temp);
 			if ($general_pid) $general_pid="$local.$general_pid";
 			if ($language) $language = $language ="AND $local.sys_language_uid =".$GLOBALS['TSFE']->sys_language_content;
-			$res = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 $additional_where", "$local.uid", "$local.$sorting $order","$startAt, $resultlimit");
+			
+			if($searchfor){
+				echo("Search for");
+				//To avoid ambigous fields we set the local table praefix
+				$localSearchFields=explode(",",$this->config['searchFields']);
+				foreach($fields as $name => $value){
+				//We need to check here if a searchField is a foreign one or not
+				if($TCA[$this->config['table']]['columns'][$name]['config']['internal_type']==db)
+					// Its not allowed to Search in foreignFields not choosen as ForeignTable
+					if ($TCA[$this->config['table']]['columns'][$name]['config']['allowed']==$foreign_table) $temp[$name]=$foreign_table.".".$value;
+				//We dont have a ForeignSearch Field
+				else $temp[$name]=$local.".".$value;
+				}
+				$localSearchFields=implode(",",$temp);
+				
+				$res = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 AND MATCH ($localSearchFields) AGAINST ('$searchfor' IN BOOLEAN MODE) $additional_where", "$local.uid", "$local.$sorting $order","$startAt, $resultlimit");
+				
+				$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 AND MATCH ($localSearchFields) AGAINST ('$searchfor' IN BOOLEAN MODE) $additional_where", "$local.uid", "$local.$sorting $order","");
+			} else {
+				
+				$res = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 $additional_where", "$local.uid", "$local.$sorting $order","$startAt, $resultlimit");
+				
+				$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $local.$hidden $language AND $local.deleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") AND $foreign_table.hidden=0 AND $foreign_table.deleted=0 $additional_where", "$local.uid", "$local.$sorting $order","");
+			}
 			//$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECT_mm_query($fields,$local,$mm_table,$foreign_table, "AND $general_pid $hidden $language AND $foreign_tabledeleted = '0' AND $foreign_table.uid IN(".$this->config['filter_fields'].") $additional_where", 'uid', "","");	
 			
 		//There are Filter Fields , in comma seperated list
 		} else {
-			$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' AND ".$this->config['foreignTables']." IN (". $this->config['filter_fields']." )  $additional_where", "", "$sorting $order", "$startAt, $resultlimit");
+			if($searchfor){
+				
+			} else {
+				$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' AND ".$this->config['foreignTables']." IN (". $this->config['filter_fields']." )  $additional_where", "", "$sorting $order", "$startAt, $resultlimit");
 	      
-			$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden AND deleted = '0' $additional_where", "", "", "");
+				$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden AND deleted = '0' $additional_where", "", "", "");
+			}
 		}
+		//No foreign table set
+		} else {
+			if($searchfor){
+			$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' AND MATCH ($this->config['searchFields']) AGAINST ('$searchfor' IN BOOLEAN MODE) $additional_where", "", "$sorting $order", "$startAt, $resultlimit");
+
+			$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden AND deleted = '0' AND MATCH ($this->config['searchFields']) AGAINST ('$searchfor' IN BOOLEAN MODE) $additional_where", "", "", "");
+			
+			} else {
+			$res = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden $language AND deleted = '0' $additional_where", "", "$sorting $order", "$startAt, $resultlimit");
+
+			$restotal = $GLOBALS["TYPO3_DB"]->exec_SELECTquery($this->config['list_showFields'], $this->config['table'], "$general_pid $hidden AND deleted = '0' $additional_where", "", "", "");
+			}
 		}
 		
 		
@@ -300,20 +340,17 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 	
 		$content_table = "";
 		$markerArray = array();
-	
-	/* ORIGINAL
-			while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
-			if ($GLOBALS['TSFE']->sys_language_content) {
-				$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
-				//t3lib_div::print_array($row);
-				//$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
-				//$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('pages_language_overlay', $row, $GLOBALS['TSFE']->sys_language_content, "strict;0");
-			}
-	*/
+
+		//If Search Fields are choosen
+		if($search){
+			$content.="<form action='".$this->pi_getPageLink($GLOBALS["TSFE"]->id)."' method='POST'>
+			<input type='hidden' name='no_cache' value='1' />
+			<input type='text' name='tx_t3ukdataview_pi1[searchfor]' value='' class='input' /><input type='submit' name=tx_t3ukdataview_pi1[submit]' value='###LABEL_SEARCH_BUTTON###' class='submit'/>
+			</form>";
+		}
 			
 		while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
 			if ($GLOBALS['TSFE']->sys_language_content) {
-			
 				$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
 				//t3lib_div::print_array($row);
 				//$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
@@ -347,6 +384,10 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 					  $content .= $theImgCode;
 				      }
 			      }
+				//Filed is an Foreign Field
+				if($TCA[$this->config['table']]['columns'][$name]['config']['internal_type']=="db"){
+					$content.=$this->getForeignField($name,$currentuid,$wrap);
+				}
 			      //Field is an Timestamp
 			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']=='date') $content .=$this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$value),$wrap);
 				//Normal Text
@@ -462,6 +503,80 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		*/
 		return $content;
 	
+	}
+	function getForeignField($foreignField,$uid,$wrap){
+		$wrap="";
+		global $TCA;
+		t3lib_div::loadTCA($this->config['table']);
+		$local=$this->config['table'];
+		$foreignTable = $TCA[$local]['columns'][$foreignField]['config']['allowed'];
+		$selectfield = $foreignTable.".".$TCA[$foreignTable]['ctrl']['label'];
+		if ($TCA[$local]['columns'][$foreignField]['config']['MM']!=""){
+			$current_mm_table = $TCA[$local]['columns'][$foreignField]['config']['MM'];
+			$join = "INNER JOIN $current_mm_table ON $local.uid = $current_mm_table.uid_local INNER JOIN $foreignTable ON $current_mm_table.uid_foreign = $foreignTable.uid";
+		}
+		else echo("ToDO");
+		$select = "SELECT $selectfield ";
+		$from = "FROM ".$local." ";
+		$where = " WHERE $local.uid=$uid";
+		$sql=$select.$from.$join.$where;
+		t3lib_div::print_array($sql);
+
+		$wrap['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
+		$wrap['stdWrap.']['require'] = 1;
+		$resForeign=$GLOBALS["TYPO3_DB"]->sql_query($sql);
+		while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($resForeign)) {
+			if ($GLOBALS['TSFE']->sys_language_content) {
+				$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
+			}
+			$content.= $this->local_cObj->stdWrap($row[$TCA[$foreignTable]['ctrl']['label']],$wrap);
+		}
+		//t3lib_div::print_array($content);
+		if($this->LOCAL_LANG[$this->LLkey][$foreignField]!=""){
+		$wrap2['stdWrap.']['outerWrap'] = '<div class="t3uk_dataview_list_'.$foreignField.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$foreignField].'</span> | </div> '."\r\n";
+		}
+		$content = $this->local_cObj->stdWrap($content,$wrap2);
+		return $content;
+	}
+
+	function computeSqlStatement($fields,$local,$mm_table,$foreign_table){
+		t3lib_div::print_array($fields);
+		global $TCA;
+		t3lib_div::loadTCA($this->config['table']);
+		$local=$this->config['table'];
+		//Define Prefix for Fields
+		$fields=explode(",",$this->config['list_showFields']);
+		foreach($fields as $name => $value){
+			//We need to check here if the Field is a foreign one or not
+			if($TCA[$local]['columns'][$value]['config']['internal_type']=="db"){
+			//Drop from list and remenber for later comupting
+			$foreignFields[$value] =$TCA[$local]['columns'][$value]['config']['allowed'];
+			}
+			//We dont have a Foreign Field
+			else {
+				$prefix = $this->config['table'];
+				$temp[$name]=$prefix.".".$value;
+			}
+		}
+		foreach($foreignFields as $name => $value){
+			$temp[$name] = $value.".".$TCA[$value]['ctrl']['label'];
+			$foreignTables[$name] = $value;	
+			if ($TCA[$local]['columns'][$name]['config']['MM']!=""){
+				$current_mm_table = $TCA[$local]['columns'][$name]['config']['MM'];
+				$join[$name] = "INNER JOIN $current_mm_table ON $local.uid = $current_mm_table.uid_local INNER JOIN $value ON $current_mm_table.uid_foreign = $value.uid";
+			}
+			else echo("ToDO");
+		
+		}
+		$selectfields=implode(",",$temp);
+		$foreignTables=implode(",",$foreignTables);
+		$select = "SELECT $selectfields ";
+		$from = "FROM ".$local." ";
+		$join = implode(" ",$join);
+		$where = " WHERE 1";
+		$sql=$select.$from.$join.$where;
+		t3lib_div::print_array($sql);
+		return $selectfields;
 	}
 
 	function getPageBrowser($markerArray) {
