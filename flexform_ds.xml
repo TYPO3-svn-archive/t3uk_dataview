@@ -104,6 +104,7 @@
 			    <n0></n0>
 		    </items>
 		    <type>select</type>
+		    <minitems>1</minitems>
 		    <maxitems>500</maxitems>
 			    <multiple>1</multiple>
 		  <size>10</size>
@@ -119,6 +120,7 @@
 			    <n0></n0>
 		    </items>
 		    <type>select</type>
+		     <minitems>0</minitems>
 		    <maxitems>500</maxitems>
 			    <multiple>1</multiple>
 		  <size>10</size>
@@ -131,6 +133,7 @@
 		<label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.list_filter</label>
              	<config>
 			<type>select</type>
+			<minitems>0</minitems>
 			<maxitems>1</maxitems>
 			 <itemsProcFunc>tx_t3ukdataview_flexfill-&gt;main</itemsProcFunc>
 			<size>1</size>
@@ -223,6 +226,19 @@
 		</config>
 	</TCEforms>
 	</list_limit>
+	<list_more>
+	  <TCEforms type="array">
+	  <label>LLL:EXT:t3uk_dataview/locallang_db.xml:tx_t3ukdataview_seiten.pi_flexform.list_more</label>
+	    <config>
+	    <type>check</type>
+	    <items type="array">
+		<numIndex index="0" type="array">
+	        <numIndex index="0"></numIndex>
+	      </numIndex>
+	  </items>
+	    </config>
+	    </TCEforms>
+	</list_more>
 	</el>
 	</ROOT>
     </sDEF>

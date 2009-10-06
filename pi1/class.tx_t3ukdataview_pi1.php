@@ -60,6 +60,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$this->config['list_order'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_order, sDEF);
 		$this->config['filter_fields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], filter_fields, sDEF);
 		$this->config['list_limit'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_limit, sDEF);
+		$this->config['list_more'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], list_more, sDEF);
 		$this->config['list_linkFields'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], linkFields, sDEF);
 		$this->config['list_singlePid'] = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], single_pid, sDEF);
 		//if there is no single page selected, just take the current one
@@ -74,21 +75,21 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$this->modus = $this->pi_getFFvalue($this->cObj->data['pi_flexform'], 'what_to_display', 'sGENERAL');
 		//Debug shit
 		//Complete Flexform
-		t3lib_div::print_array("showFields:");
-		t3lib_div::print_array($this->config['list_showFields']);
-		t3lib_div::print_array($this->config['filter_fields']);
-		t3lib_div::print_array($this->config['foreignTables']);
-		t3lib_div::print_array($this->modus);
-		t3lib_div::print_array($this->config['list_linkFields']);
-		t3lib_div::print_array($this->config['list_singlePid']);
-		t3lib_div::print_array($this->config['list_singlePid']);
-		//t3lib_div::print_array($this->config['searchFields']);
-		//t3lib_div::print_array("Config:");
-		//t3lib_div::print_array($this->config);
-		//t3lib_div::print_array("Template:");
-		//t3lib_div::print_array($this->config['template']);
-		//t3lib_div::print_array("General Pid");
-		//t3lib_div::print_array($this->config['general_pid']);
+		//////t3lib_div::print_array("showFields:");
+		//////t3lib_div::print_array($this->config['list_showFields']);
+		//////t3lib_div::print_array($this->config['filter_fields']);
+		//////t3lib_div::print_array($this->config['foreignTables']);
+		//////t3lib_div::print_array($this->modus);
+		//////t3lib_div::print_array($this->config['list_linkFields']);
+		//////t3lib_div::print_array($this->config['list_singlePid']);
+		//////t3lib_div::print_array($this->config['list_singlePid']);
+		////////t3lib_div::print_array($this->config['searchFields']);
+		////////t3lib_div::print_array("Config:");
+		////////t3lib_div::print_array($this->config);
+		////////t3lib_div::print_array("Template:");
+		////////t3lib_div::print_array($this->config['template']);
+		////////t3lib_div::print_array("General Pid");
+		////////t3lib_div::print_array($this->config['general_pid']);
 	}
 	/**
 	 * The main method of the PlugIn
@@ -170,9 +171,11 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 				if($TCA[$this->config['table']]['columns'][$name]['config']['internal_type']=='db') {	
 					//Its an MM Relation
 					if($TCA[$this->config['table']]['columns'][$name]['config']['MM']){
+						//echo("toll");
 						$local=$this->config['table'];
 						$mm_table = $TCA[$this->config['table']]['columns'][$name]['config']['MM'];
 						$foreign_table = $TCA[$this->config['table']]['columns'][$name]['config']['allowed'];
+						////////t3lib_div::print_array($local."XXXX".$foreign_table);
 						//To avoid ambigous fields we set the local table praefix
 						//We take the label of the foreign table as the "to show field"
 						// for the frontend. Better ideas?
@@ -193,10 +196,13 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 								$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
 							}
 							foreach($row as $name => $value){
-							//t3lib_div::print_array($TCA[$this->config['table']]['columns'][$name]);
-							$wrap2['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
-							$wrap2['stdWrap.']['require'] = 1;
-							//t3lib_div::print_array($lconf["label_$name."]);
+							////////t3lib_div::print_array($lconf[$local."."][$foreign_table."."]['stdWrap.']);
+							if($lconf[$local."."][$foreign_table."."]['stdWrap.']) $wrap2 = $lconf[$local."."][$foreign_table."."]['stdWrap.'];
+							else { 
+							  $wrap2['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
+							  $wrap2['stdWrap.']['require'] = 1;
+							}
+							////////t3lib_div::print_array($lconf["label_$name."]);
 				
 							if($this->LOCAL_LANG[$this->LLkey][$name]!=""){
 								$wrap2['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
@@ -207,7 +213,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 					}
 					//Its a normal commaseperated Relation
 					if($ToDo){
-					echo("Commaseperated is ToDo");
+					//echo("Commaseperated is ToDo");
 					}
 				
 				}
@@ -220,6 +226,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			      if(($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']!='date')||$TCA[$this->config['table']]['columns'][$name]['config']['type']=='text')
 				$content .= $this->local_cObj->stdWrap($value,$wrap);
 			  }
+			
 			}
 		return $content;
 		
@@ -237,7 +244,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		if ($this->config['searchFields']!="") $search=true;
 		$searchfor = htmlspecialchars($this->piVars['searchfor']);
 		
-		t3lib_div::print_array($searchfor);
+		//////t3lib_div::print_array($searchfor);
 		
 		//This is done because fe_users dont have a hidden and sys_language_uid field (really stupid)
 		if($this->config['table']=="fe_users"){
@@ -260,13 +267,15 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$resultlimit = $this->internal['results_at_a_time'];
 		$startAt = (intval($this->piVars['pointer'])) ? (intval($this->piVars['pointer']) * $this->internal['results_at_a_time']) : 0;
 		
-		//Foreign Tables is set
-		if($this->config['foreignTables']){
+		//Foreign Tables and filter fields are set
+		if($this->config['foreignTables']&&$this->config['filter_fields']){
 		//There are Filter Fields, in an MM table
 		if(($TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['MM'])){
 			$local=$this->config['table'];
 			$mm_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['MM'];
-			$foreign_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['allowed'];
+			if($TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['allowed']) $foreign_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['allowed'];
+			if ($TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['foreign_table']) $foreign_table = $TCA[$this->config['table']]['columns'][$this->config['foreignTables']]['config']['foreign_table'];
+
 			//To avoid ambigous fields we set the table praefix
 			
 			$fields=explode(",",$this->config['list_showFields']);
@@ -278,7 +287,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			if ($language) $language = $language ="AND $local.sys_language_uid =".$GLOBALS['TSFE']->sys_language_content;
 			
 			if($searchfor){
-				echo("Search for");
+				//echo("Search for");
 				//To avoid ambigous fields we set the local table praefix
 				$localSearchFields=explode(",",$this->config['searchFields']);
 				foreach($fields as $name => $value){
@@ -346,25 +355,25 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		if($search){
 			$content.="<form action='".$this->pi_getPageLink($GLOBALS["TSFE"]->id)."' method='POST'>
 			<input type='hidden' name='no_cache' value='1' />
-			<input type='text' name='tx_t3ukdataview_pi1[searchfor]' value='' class='input' /><input type='submit' name=tx_t3ukdataview_pi1[submit]' value='###LABEL_SEARCH_BUTTON###' class='submit'/>
+			<input type='text' name='tx_t3ukdataview_pi1[searchfor]' value='' class='input' /><input type='submit' name=tx_t3ukdataview_pi1[submit]' value='".$this->pi_getLL('label_search_button')."' class='submit'/>
 			</form>";
 		}
 			
 		while ($row = $GLOBALS["TYPO3_DB"]->sql_fetch_assoc($res)) {
 			if ($GLOBALS['TSFE']->sys_language_content) {
 				$row = $GLOBALS['TSFE']->sys_page->getPageOverlay($row);
-				//t3lib_div::print_array($row);
+				////////t3lib_div::print_array($row);
 				//$OLmode = ($this->sys_language_mode == 'strict'?'hideNonTranslated':'');
 				//$row = $GLOBALS['TSFE']->sys_page->getRecordOverlay('pages_language_overlay', $row, $GLOBALS['TSFE']->sys_language_content, "strict;0");
 			}
 			//The uid of the current element
 			$currentuid=$row['uid'];
 			foreach($row as $name => $value){
-			  //t3lib_div::print_array($TCA[$this->config['table']]['columns'][$name]);
+			  ////////t3lib_div::print_array($TCA[$this->config['table']]['columns'][$name]);
 			 // $wrap['stdWrap'] = "<div class='t3uk_dataview_$name'> | </div>";
 			  $wrap['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
 			  $wrap['stdWrap.']['require'] = 1;
-			//t3lib_div::print_array($lconf["label_$name."]);
+			////////t3lib_div::print_array($lconf["label_$name."]);
 
 			  if($this->LOCAL_LANG[$this->LLkey][$name]!=""){
 				$wrap['stdWrap.']['wrap2'] = '<div class="t3uk_dataview_list_'.$name.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$name].'</span> | </div> '."\r\n";
@@ -393,7 +402,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			      if($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']=='date') $content .=$this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$value),$wrap);
 				//Normal Text
 			      if(($TCA[$this->config['table']]['columns'][$name]['config']['type']=='input'&&$TCA[$this->config['table']]['columns'][$name]['config']['eval']!='date')||$TCA[$this->config['table']]['columns'][$name]['config']['type']=='text')
-				//Shall the current field be linke to single page?
+				//Shall the current field be linked to single page?
 				if (stripos($this->config['list_linkFields'],$name)!==false){
 					$temp= $this->pi_linkTP($value,array($this->prefixId."[uid]" => $currentuid,$this->prefixId."[single]" => "1"),1,$this->config['list_singlePid']);
 					$content .= $this->local_cObj->stdWrap($temp,$wrap);
@@ -401,107 +410,11 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 				else $content .= $this->local_cObj->stdWrap($value,$wrap);
 			  }
 			}
-
-			/*
-			$datum_beginn = date("jS F Y", $row["tx_t3ukdataview_datum_beginn"]);
-			$datum_ende = date("jS F Y", $row["tx_t3ukdataview_datum_ende"]);
-			$markerArray["###TITEL###"] = $this->pi_linkToPage($row["title"],$row["uid"],$target = '_top',array());
-			$image =$row['tx_t3ukdataview_bild'];
-			if($row["tx_t3ukdataview_datum_beginn"]==0 ||$row["tx_t3ukdataview_datum_beginn"]==null)$markerArray["###DATUM_BEGINN###"] =""; 
-			else $markerArray["###DATUM_BEGINN###"] = $this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$row['tx_t3ukdataview_datum_beginn']),$lconf['dateBegin.']);
-
-			if ($row["tx_t3ukdataview_datum_ende"]==0||$row["tx_t3ukdataview_datum_ende"]==null) $markerArray["###DATUM_ENDE###"] ="";
-			else $markerArray["###DATUM_ENDE###"] = $this->local_cObj->stdWrap(strftime($lconf['date_stdWrap'],$row['tx_t3ukdataview_datum_ende']),$lconf['dateEnd.']);
-	
-			$markerArray["###UHRZEIT_BEGINN###"] = $this->local_cObj->stdWrap($row['tx_t3ukdataview_uhrzeit_beginn'],$lconf['time_wrap.']);
-			$markerArray["###UHRZEIT_ENDE###"] = $row['tx_t3ukdataview_uhrzeit_ende'];
-			$markerArray["###ORT###"] = $row['tx_t3ukdataview_ort'];
-			if ($row["tx_t3ukdataview_typ"]!="")$markerArray["###TYP###"] = $row['tx_t3ukdataview_typ'].": ";
-			else $markerArray["###TYP###"] ="";
-			$markerArray["###TEASER###"] = $row["tx_t3ukdataview_teaser"];
-			$markerArray["###DETAILS###"] =$this->pi_linkToPage($this->pi_getLL('label_detaillink_kurz'),$row["uid"],$target = '_top',array());
-			$image =$row['tx_t3ukdataview_bild'];	
-			$lconf["image."]["file"] = "uploads/tx_t3ukdataview/".($image);
-			$lconf["image."]["altText"] = $image;
-			$theImgCode = $this->cObj->IMAGE($lconf["image."]);
-			$markerArray["###BILD###"] = $theImgCode;
-			$content_table .= $this->cObj->substituteMarkerArrayCached($t["item"],$markerArray,array(),array());*/
+		if($this->config['list_more']){
+		  $temp=$this->pi_linkTP($this->pi_getLL('label_detaillink'),array($this->prefixId."[uid]" => $currentuid,$this->prefixId."[single]" => "1"),1,$this->config['list_singlePid']);
+		  $content .= $this->local_cObj->stdWrap($temp,$lconf['detail_link.']);
 		}
-		/*
-		$subpartArray = array();
-		$subpartArray["###LABEL_DESCRIPTION###"] = $this->pi_getLL('label_usergroup_description');
-		$subpartArray["###USERGROUP###"] = $group_name;
-		$subpartArray["###BROWSE###"] = $this->pi_list_browseresults(1, "");
-		$subpartArray["###USERGROUP_DESCRIPTION###"] = $group_description;
-		$subpartArray["###PASSWORD###"] = $row["password"];
-		$subpartArray["###ISONLINE###"] = $online;
-		$subpartArray["###LASTLOGIN###"] = $lastlogin;
-		$subpartArray["###NAME###"] = $row["name"];
-		$subpartArray["###TITLE###"] = $row["title"];
-		$subpartArray["###COMPANY###"] = $row["tx_ukalumni_company_name"];
-		$subpartArray["###STREET###"] = $row["address"];
-		$subpartArray["###ZIP###"] = $row["zip"];
-		$subpartArray["###CITY###"] = $row["city"];
-		$subpartArray["###COUNTRY###"] = $row["country"];
-		$subpartArray["###PHONE###"] = $row["telephone"];
-		$subpartArray["###FAX###"] = $row["fax"];
-		$subpartArray["###EMAIL###"] = $this->cObj->typolink($row["email"],$temp_conf);
-		$subpartArray["###WWW###"] = "<A href='http://".$row['www']."' title='".$row["name"]."' target='_blank'>".$row['www']."</A>";
-		$lconf["image."]["file"] = "uploads/tx_srfeuserregister/".($row['image']);
-		$lconf["image."]["altText"] = $image;
-	
-		$theImgCode = $this->cObj->IMAGE($lconf["image."]);
-		$markerArray["###IMAGE###"] =$theImgCode;
-		$subpartArray["###DESCRIPTION###"] = $row["comments"];
-		$subpartArray["###LABEL_USERGROUP_DESCRIPTION###"] = $this->pi_getLL('label_usergroup_description');
-		$subpartArray["###LABEL_TITLE###"] = $this->pi_getLL('label_title');
-		$subpartArray["###LABEL_NAME###"] = $this->pi_getLL('label_name');
-		$subpartArray["###LABEL_COMPANY###"] = $this->pi_getLL('label_company');
-		$subpartArray["###LABEL_PASSWORD###"] = $this->pi_getLL('label_password');
-		$subpartArray["###LABEL_ONLINE###"] = $this->pi_getLL('label_online');
-		$subpartArray["###LABEL_LASTLOGIN###"] = $this->pi_getLL('label_lastlogin');
-		$subpartArray["###LABEL_STREET###"] = $this->pi_getLL('label_street');
-		$subpartArray["###LABEL_ZIP###"] = $this->pi_getLL('label_zip');
-		$subpartArray["###LABEL_CITY###"] = $this->pi_getLL('label_city');
-		$subpartArray["###LABEL_COUNTRY###"] = $this->pi_getLL('label_country');
-		$subpartArray["###LABEL_PHONE###"] = $this->pi_getLL('label_phone');
-		$subpartArray["###LABEL_FAX###"] = $this->pi_getLL('label_fax');
-		$subpartArray["###LABEL_EMAIL###"] = $this->pi_getLL('label_email');
-		$subpartArray["###LABEL_WWW###"] = $this->pi_getLL('label_www');
-		$subpartArray["###LABEL_IMAGE###"] = $this->pi_getLL('label_image');
-	
-		$subpartArray["###LABEL_SEARCH_BUTTON###"] = $this->pi_getLL('label_search_button');
-		$subpartArray["###SEARCH_ACTION###"] = $this->pi_getPageLink($GLOBALS["TSFE"]->id);
-		$subpartArray["###SEARCH_INPUT###"] = "$this->prefixId.'[DATA][search]";
-		$subpartArray["###SEARCH_SUBMIT###"] = "$this->prefixId.'[search]";
-		//$subpartArray["###COUNT###"] = $count;
-		//$subpartArray["###COUNT_TEXT###"] = $this->pi_getLL('count_text');
-	
-	
-		if ($this->config['limit'] > 0 && $count > $this->config['limit']) {
-			$this->internal['res_count'] = $count;
-			$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'] > 0 ? $this->conf['pageBrowser.']['maxPages'] : 10;
-			$this->internal['results_at_a_time'] = $this->config['limit'];
-			if (!$this->conf['pageBrowser.']['showPBrowserText']) {
-				$this->LOCAL_LANG[$this->LLkey]['pi_list_browseresults_page'] = '';
-			}
-			$subpartArray['###BROWSE_LINKS###'] = $this->pi_list_browseresults($this->conf['pageBrowser.']['showResultCount'],$this->conf['pageBrowser.']['tableParams']);
-			$subpartArray = $this->getPageBrowser($subpartArray);
-		} else {
-			$this->internal['res_count'] = $count;
-			$this->internal['maxPages'] = $this->conf['pageBrowser.']['maxPages'] > 0 ? $this->conf['pageBrowser.']['maxPages'] : 10;
-		
-			$subpartArray = $this->getPageBrowser($subpartArray);
-			$subpartArray['###BROWSE_LINKS###'] = '';
-			$subpartArray['###LINK_PREV###'] = '';
-			$subpartArray['###PAGES###'] = '';
-			$subpartArray['###LINK_NEXT###'] = '';
-	
-		} 	
-		$subpartArray["###CONTENT###"] = $content_table;
-	
-		$content .= $this->cObj->substituteMarkerArrayCached($t["total"],array(),$subpartArray,array('browseBoxWrap' => '<div class="browseBoxWrap">|</div>'));
-		*/
+		}
 		return $content;
 	
 	}
@@ -521,7 +434,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$from = "FROM ".$local." ";
 		$where = " WHERE $local.uid=$uid";
 		$sql=$select.$from.$join.$where;
-		t3lib_div::print_array($sql);
+		//////t3lib_div::print_array($sql);
 
 		$wrap['stdWrap.']['wrap'] = '<span class="t3uk_dataview_content"> | </span>';
 		$wrap['stdWrap.']['require'] = 1;
@@ -532,7 +445,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 			}
 			$content.= $this->local_cObj->stdWrap($row[$TCA[$foreignTable]['ctrl']['label']],$wrap);
 		}
-		//t3lib_div::print_array($content);
+		////////t3lib_div::print_array($content);
 		if($this->LOCAL_LANG[$this->LLkey][$foreignField]!=""){
 		$wrap2['stdWrap.']['outerWrap'] = '<div class="t3uk_dataview_list_'.$foreignField.'"><span class="t3uk_dataview_list_label">'.$this->LOCAL_LANG[$this->LLkey][$foreignField].'</span> | </div> '."\r\n";
 		}
@@ -541,7 +454,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 	}
 
 	function computeSqlStatement($fields,$local,$mm_table,$foreign_table){
-		t3lib_div::print_array($fields);
+		//////t3lib_div::print_array($fields);
 		global $TCA;
 		t3lib_div::loadTCA($this->config['table']);
 		$local=$this->config['table'];
@@ -576,7 +489,7 @@ class tx_t3ukdataview_pi1 extends tslib_pibase {
 		$join = implode(" ",$join);
 		$where = " WHERE 1";
 		$sql=$select.$from.$join.$where;
-		t3lib_div::print_array($sql);
+		//////t3lib_div::print_array($sql);
 		return $selectfields;
 	}
 

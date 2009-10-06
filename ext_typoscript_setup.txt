@@ -30,7 +30,10 @@ displayList {
 		wrap = -&nbsp;|
 		required = 1
 	}
-		
+	detail_link = TEXT
+	detail_link{
+	  wrap = <div class="t3uk_dataview_list_detail_link">|</div>
+	}
 }
 
 

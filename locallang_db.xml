@@ -39,6 +39,7 @@
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_more">"Mehr.." Button anzeigen.</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.fetable">Tabelle</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.showField">Sichtbare Felder</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.sheet_single">Einzelansicht</label>
@@ -87,6 +88,7 @@
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_more">"Mehr.." Button anzeigen.</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display">Art der Ansicht</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_list">Listenansicht</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_single">Einzelansicht</label>
@@ -126,6 +128,7 @@
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_asc">Aufsteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_order_desc">Absteigend</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.list_limit">Grenze</label>
+			<label index="tx_t3ukdataview_seiten.pi_flexform.list_more">Show "more..." button</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display">Art der Ansicht</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_list">Listenansicht</label>
 			<label index="tx_t3ukdataview_seiten.pi_flexform.general_what_to_display_single">Einzelansicht</label>

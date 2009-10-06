@@ -170,7 +170,7 @@ class tx_t3ukdataview_flexfill {
 		$params['items'][]=Array('', '');
 		$this->getFieldsFT($params,$table,'');
 		$foreignTables=@$flexarr['data']['sDEF']['lDEF']['foreignTables']['vDEF'];
-		t3lib_div::print_array($foreignTables);
+		//t3lib_div::print_array($foreignTables);
 		$fta=explode(',',$foreignTables);
 		//t3lib_div::print_array($foreignTables);
         foreach($fta as $ft) {
@@ -343,18 +343,17 @@ class tx_t3ukdataview_flexfill {
 		$ta=array();
 		$prefix="";
 		t3lib_div::loadTCA($table);
-		//t3lib_div::print_array($TCA[$table]['columns'][$field]['config']['allowed']);
-		if (is_array($TCA[$table]['columns'][$field]['config']))  {
+		
+		if (is_array($TCA[$table]['columns'][$field]['config'])){
 			//Switch between MM and comma seperated list
-			if($TCA[$table]['columns'][$field]['config']['MM']){
-			$table=$TCA[$table]['columns'][$field]['config']['allowed'];
-			} elseif($TCA[$table]['columns'][$field]['config']['foreign_table']){
-			 $table=$TCA[$table]['columns'][$field]['config']['foreign_table'];
-			}
+			if($TCA[$table]['columns'][$field]['config']['MM']&&$TCA[$table]['columns'][$field]['config']['allowed']) $table=$TCA[$table]['columns'][$field]['config']['allowed'];
+			if($TCA[$table]['columns'][$field]['config']['foreign_table']!="") $table=$TCA[$table]['columns'][$field]['config']['foreign_table'];
+			
 			$label=$TCA[$table]['ctrl']['label'];
 			$db=$GLOBALS['TYPO3_DB'];
 			$where="hidden = 0 and deleted = 0";
-			$res=$db->exec_SELECTquery($label.", uid",$table,$where);
+			if($label!="")$label=$label.", ";
+			$res=$db->exec_SELECTquery($label."uid",$table,$where);
 			while ($row=$db->sql_fetch_row($res)){
 			      
 				//$config=$TCA[$table]['columns'];
